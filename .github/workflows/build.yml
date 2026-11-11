@@ -66,21 +66,32 @@ jobs:
           git clone --depth=1 https://github.com/KernelSU-Next/KernelSU-Next.git KernelSU
           bash KernelSU/tools/init_kernelsu.sh kernel-source
 
-      - name: ⚙️ Build Kernel
+            - name: ⚙️ Build Kernel
         run: |
           export KBUILD_BUILD_USER="${{ github.event.inputs.developer }}"
           export KBUILD_BUILD_HOST="workspace"
-          export PATH=$GITHUB_WORKSPACE/clang/bin:${PATH}
+          export PATH="$GITHUB_WORKSPACE/clang/bin:$GITHUB_WORKSPACE/aarch64-linux-android-4.9/bin:$GITHUB_WORKSPACE/arm-linux-androideabi-4.9/bin:${PATH}"
           args="ARCH=arm64 \
+                SUBARCH=arm64 \
+                CONFIG_SHELL=/bin/bash \
+                CC=clang \
+                LD=ld.lld \
+                AR=llvm-ar \
+                NM=llvm-nm \
+                OBJCOPY=llvm-objcopy \
+                OBJDUMP=llvm-objdump \
+                STRIP=llvm-strip \
                 LLVM=1 \
                 LLVM_IAS=1 \
                 O=../out \
                 CLANG_TRIPLE=aarch64-linux-gnu- \
-                CROSS_COMPILE=$GITHUB_WORKSPACE/aarch64-linux-android-4.9/bin/aarch64-linux-android- \
-                CROSS_COMPILE_ARM32=$GITHUB_WORKSPACE/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-"
+                CROSS_COMPILE=aarch64-linux-android- \
+                CROSS_COMPILE_ARM32=arm-linux-androideabi- \
+                CROSS_COMPILE_COMPAT=arm-linux-androideabi-"
           cd kernel-source
           make ${args} ${{ github.event.inputs.defconfig }}
           make -j$(nproc) ${args}
+
 
       - name: 📦 Package with AnyKernel3
         if: ${{ github.event.inputs.anykernel }}
