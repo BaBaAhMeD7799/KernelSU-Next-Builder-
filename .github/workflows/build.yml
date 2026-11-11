@@ -66,7 +66,7 @@ jobs:
           git clone --depth=1 https://github.com/KernelSU-Next/KernelSU-Next.git KernelSU
           bash KernelSU/tools/init_kernelsu.sh kernel-source
 
-            - name: ⚙️ Build Kernel
+      - name: ⚙️ Build Kernel
         run: |
           export KBUILD_BUILD_USER="${{ github.event.inputs.developer }}"
           export KBUILD_BUILD_HOST="workspace"
