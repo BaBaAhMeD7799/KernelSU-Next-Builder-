@@ -68,10 +68,10 @@ jobs:
 
       - name: ⚙️ Build Kernel
         run: |
-          sudo fallocate -l 16G /swapfile
-          sudo chmod 600 /swapfile
-          sudo mkswap /swapfile
-          sudo swapon /swapfile
+          sudo fallocate -l 12G /swapfile2
+          sudo chmod 600 /swapfile2
+          sudo mkswap /swapfile2
+          sudo swapon /swapfile2
           export KBUILD_BUILD_USER="${{ github.event.inputs.developer }}"
           export KBUILD_BUILD_HOST="workspace"
           export PATH="$GITHUB_WORKSPACE/clang/bin:$GITHUB_WORKSPACE/aarch64-linux-android-4.9/bin:$GITHUB_WORKSPACE/arm-linux-androideabi-4.9/bin:${PATH}"
@@ -100,7 +100,6 @@ jobs:
           sed -i 's/CONFIG_THINLTO=y/# CONFIG_THINLTO is not set/g' ../out/.config
           make ${args} olddefconfig
           make -j$(nproc) ${args} CONFIG_LTO=n CONFIG_LTO_CLANG=n
-
 
 
       - name: 📦 Package with AnyKernel3
