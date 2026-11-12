@@ -68,7 +68,7 @@ jobs:
 
       - name: ⚙️ Build Kernel
         run: |
-          sudo fallocate -l 12G /swapfile
+          sudo fallocate -l 16G /swapfile
           sudo chmod 600 /swapfile
           sudo mkswap /swapfile
           sudo swapon /swapfile
@@ -94,7 +94,13 @@ jobs:
                 CROSS_COMPILE_COMPAT=arm-linux-androideabi-"
           cd kernel-source
           make ${args} ${{ github.event.inputs.defconfig }}
-          make -j$(nproc) ${args}
+          sed -i 's/CONFIG_LTO=y/# CONFIG_LTO is not set/g' ../out/.config
+          sed -i 's/CONFIG_LTO_CLANG=y/# CONFIG_LTO_CLANG is not set/g' ../out/.config
+          sed -i 's/CONFIG_LTO_CLANG_FULL=y/# CONFIG_LTO_CLANG_FULL is not set/g' ../out/.config
+          sed -i 's/CONFIG_THINLTO=y/# CONFIG_THINLTO is not set/g' ../out/.config
+          make ${args} olddefconfig
+          make -j$(nproc) ${args} CONFIG_LTO=n CONFIG_LTO_CLANG=n
+
 
 
       - name: 📦 Package with AnyKernel3
